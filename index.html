@@ -23,6 +23,11 @@ display:none;
 margin-top:8px;
 color:#ccc;
 }
+
+.iframe{
+max-width:100%;
+border-radius:6px;
+}
 </style>
 
 </head>
@@ -63,8 +68,16 @@ box.innerHTML = `
 
 <div class="details">
 Difficulty: ${difficulty}<br>
-Verifier: ${verifier}<br>
-<a href="${video}" target="_blank">Video</a>
+Verifier: ${verifier}<br><br>
+
+<iframe 
+width="560" 
+height="315"
+src="https://www.youtube.com/embed/${video.split("v=")[1]}"
+frameborder="0"
+allowfullscreen>
+</iframe>
+
 </div>
 `;
 
