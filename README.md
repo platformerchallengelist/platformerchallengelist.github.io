@@ -1,2 +1,2 @@
-# platformerchallengelist.github.io
-The platformer challenge list for Geometry Dash.
+# Information
+This website is a work in progress, please inform me of any bugs.
