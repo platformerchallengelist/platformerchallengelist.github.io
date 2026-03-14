@@ -4,49 +4,102 @@
 <title>Platformer Challenge List</title>
 
 <style>
+
 body{
-background:#111;
+background:#0f0f0f;
 color:white;
 font-family:Arial;
+margin:0;
+}
+
+h1{
+text-align:center;
+margin-top:30px;
+}
+
+#search{
+display:block;
+margin:20px auto;
+padding:10px;
+width:300px;
+border-radius:6px;
+border:none;
+}
+
+#list{
+width:800px;
+margin:auto;
 }
 
 .level{
-background:#222;
-margin:10px;
-padding:10px;
+background:#1a1a1a;
+margin:10px 0;
+padding:15px;
 border-radius:8px;
 cursor:pointer;
+transition:0.2s;
+}
+
+.level:hover{
+background:#252525;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.rank{
+font-weight:bold;
 }
 
 .details{
 display:none;
-margin-top:8px;
-color:#ccc;
+margin-top:15px;
 }
 
-.iframe{
-max-width:100%;
-border-radius:6px;
+.video{
+margin-top:10px;
 }
+
+iframe{
+width:100%;
+height:350px;
+border:none;
+border-radius:12px; /* rounded video corners */
+}
+
+/* difficulty colors */
+
+.extreme{border-left:6px solid #ff2b2b;}
+.insane{border-left:6px solid #ff7b00;}
+.hard{border-left:6px solid #ffd000;}
+.medium{border-left:6px solid #3cff00;}
+.easy{border-left:6px solid #00d9ff;}
+
 </style>
-
 </head>
 
 <body>
 
 <h1>Platformer Challenge List</h1>
 
+<input id="search" placeholder="Search levels...">
+
 <div id="list"></div>
 
 <script>
 
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6IIr-OJxwJIa329mwA13dsgfjHPBafz6TY1813MYjfP_lv-hPyc3LsIakov80NoAC6vxBr02di4Bh/pub?output=csv";
+const sheetURL = "PUT YOUR CSV LINK HERE";
 
-fetch(sheetURL)
-.then(response => response.text())
+let openBox = null;
+
+fetch(sheetURL + "&t=" + new Date().getTime())
+.then(res => res.text())
 .then(data => {
 
-const rows = data.split("\n").slice(1);
+const rows = data.trim().split("\n").slice(1);
 const container = document.getElementById("list");
 
 rows.forEach(row => {
@@ -58,36 +111,70 @@ const level = cols[1];
 const creator = cols[2];
 const difficulty = cols[3];
 const verifier = cols[4];
-const video = cols[5];
+const id = cols[5];
+const video = cols[6];
+
+const videoID = video.split("v=")[1];
 
 const box = document.createElement("div");
-box.className = "level";
+
+box.className = "level " + difficulty.toLowerCase();
 
 box.innerHTML = `
-<b>#${rank} ${level}</b> by ${creator}
+<div class="header">
+<span class="rank">#${rank} ${level}</span>
+<span>by ${creator}</span>
+</div>
 
 <div class="details">
-Difficulty: ${difficulty}<br>
-Verifier: ${verifier}<br><br>
 
-<iframe 
-width="560" 
-height="315"
-src="https://www.youtube.com/embed/${video.split("v=")[1]}"
-frameborder="0"
-allowfullscreen>
-</iframe>
+<p>
+Difficulty: ${difficulty}<br>
+Verifier: ${verifier}<br>
+Level ID: ${id}
+</p>
+
+<div class="video">
+<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>
+</div>
 
 </div>
 `;
 
 box.onclick = () => {
+
 const details = box.querySelector(".details");
+
+if(openBox && openBox !== details){
+openBox.style.display = "none";
+}
+
 details.style.display =
-details.style.display === "none" ? "block" : "none";
+details.style.display === "block" ? "none" : "block";
+
+openBox = details;
+
 };
 
 container.appendChild(box);
+
+});
+
+});
+
+/* search */
+
+document.getElementById("search").addEventListener("input", function(){
+
+const search = this.value.toLowerCase();
+const levels = document.querySelectorAll(".level");
+
+levels.forEach(level => {
+
+level.style.display =
+level.innerText.toLowerCase().includes(search)
+? "block"
+: "none";
 
 });
 
